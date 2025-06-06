@@ -1,0 +1,5 @@
+### Prueba de conexión a Supabase
+GET https://txeztjszwqkfbydvxltc.supabase.co/rest/v1/clientes?select=*
+apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4ZXp0anN6d3FrZmJ5ZHZ4bHRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDM3OTcsImV4cCI6MjA2NDYxOTc5N30.1y3reFe_RCzGrx1H-ym1c9A-hbZ9gdgjfQ8PD-28hIc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4ZXp0anN6d3FrZmJ5ZHZ4bHRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDM3OTcsImV4cCI6MjA2NDYxOTc5N30.1y3reFe_RCzGrx1H-ym1c9A-hbZ9gdgjfQ8PD-28hIc
+Content-Type: application/json

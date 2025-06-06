@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Empleados{% endblock %}
+
+{% block content %}
+
+  <div class="mt-4">
+    <h2 class="mb-4">Lista de Empleados</h2>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Nombre</th>
+            <th>Posición</th>
+            <th>Salario</th>
+            <th>Fecha Ingreso</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="empleadosList">
+          <!-- Datos se cargarán dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+    <button class="btn btn-primary" onclick="location.href='/formulario'">
+      <i class="bi bi-plus-circle"></i> Agregar Empleado
+    </button>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('/api/empleados', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Error cargando empleados');
+        return response.json();
+      })
+      .then(data => {
+        const tbody = document.getElementById('empleadosList');
+        tbody.innerHTML = data.map(empleado => `
+          <tr>
+            <td>${empleado.nombre}</td>
+            <td>${empleado.posicion}</td>
+            <td>${empleado.salario.toLocaleString('es-DO', {style: 'currency', currency: 'DOP'})}</td>
+            <td>${new Date(empleado.fecha_ingreso).toLocaleDateString()}</td>
+            <td>
+              <button class="btn btn-sm btn-warning me-2" onclick="location.href='/formulario?id=${empleado.id}'">
+                Editar
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="deleteEmpleado(${empleado.id})">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert(error.message);
+      });
+    });
+
+    function deleteEmpleado(id) {
+      if (confirm('¿Está seguro de eliminar este empleado?')) {
+        fetch(`/api/empleados/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            location.reload();
+          } else {
+            throw new Error('Error eliminando empleado');
+          }
+        })
+        .catch(error => alert(error.message));
+      }
+    }
+  </script>
+{% endblock %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuevo Empleado</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/empleados.html">Sistema Nómina</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <h2>Nuevo Empleado</h2>
+    <form id="empleadoForm" onsubmit="handleSubmit(event)">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" class="form-control" name="nombre" required>
+        </div>
+        
+        <div class="col-md-6">
+          <label class="form-label">Posición</label>
+          <select class="form-select" name="posicion" required>
+            <option value="">Seleccionar cargo...</option>
+            <option>Desarrollador</option>
+            <option>Diseñador</option>
+            <option>Gerente</option>
+            <option>Contador</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Salario (DOP)</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input type="number" class="form-control" name="salario" min="0" step="1000" required>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Fecha de ingreso</label>
+          <input type="date" class="form-control" name="fecha_ingreso" required>
+        </div>
+
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-save me-2"></i>
+            Guardar Empleado
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const empleadoId = urlParams.get('id');
+      
+      if (empleadoId) {
+        fetch(`/api/empleados/${empleadoId}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.querySelector('input[name="nombre"]').value = data.nombre;
+          document.querySelector('input[name="posicion"]').value = data.posicion;
+          document.querySelector('input[name="salario"]').value = data.salario;
+          document.querySelector('input[name="fecha_ingreso"]').value = data.fecha_ingreso.split('T')[0];
+        });
+      }
+    });
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const empleadoId = new URLSearchParams(window.location.search).get('id');
+      const method = empleadoId ? 'PUT' : 'POST';
+      const url = empleadoId ? `/api/empleados/${empleadoId}` : '/api/empleados';
+
+      fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: JSON.stringify(Object.fromEntries(formData))
+      })
+      .then(response => {
+        if (response.ok) {
+          window.location.href = '/empleados';
+        } else {
+          throw new Error('Error guardando empleado');
+        }
+      })
+      .catch(error => alert(error.message));
+    }
+  </script>
+{% endblock %}
